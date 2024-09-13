@@ -1,3 +1,10 @@
+/**
+ * StripePaymentService class implements the PaymentGatewayService interface for processing payments using Stripe.
+ * It retrieves the Stripe API key from application properties and uses the Stripe Java library to create charges.
+ *
+ * @author uday
+ * @sine 1.0.0.
+ */
 package com.pmspProject.pmsp.service;
 
 import com.stripe.Stripe;
@@ -14,6 +21,15 @@ public class StripePaymentService implements PaymentGatewayService {
     @Value("${stripe.api.key}")
     private String stripeApiKey;
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param amount          the amount to be paid
+     * @param paymentMethodId the ID of the payment method (e.g., a token or ID from
+     *                        Stripe Elements)
+     * @return true if the payment is successful, false otherwise
+     * @throws Exception if there is an error during payment processing
+     */
     @Override
     public boolean processPayment(Double amount, String paymentMethodId) throws Exception {
         // Initialize Stripe with the API key

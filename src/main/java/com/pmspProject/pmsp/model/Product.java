@@ -1,3 +1,9 @@
+/**
+ * This class represents the Order entity in the database.
+ *
+ * @author uday
+ * @since 1.0
+ */
 package com.pmspProject.pmsp.model;
 
 import jakarta.persistence.*;

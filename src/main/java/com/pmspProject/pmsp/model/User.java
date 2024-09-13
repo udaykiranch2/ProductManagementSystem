@@ -1,5 +1,14 @@
+/**
+ * This class represents the User entity in the database.
+ * It uses Lombok's @Data annotation to automatically generate getters, setters, equals, hashCode, and toString methods.
+ *
+ * The User entity is associated with multiple Role entities through a many-to-many relationship.
+ * The relationship is defined using the @ManyToMany, @JoinTable, and @JoinColumn annotations.
+ *
+ * @author uday
+ * @since 1.0
+ */
 package com.pmspProject.pmsp.model;
-
 
 import jakarta.persistence.*;
 import lombok.Data;

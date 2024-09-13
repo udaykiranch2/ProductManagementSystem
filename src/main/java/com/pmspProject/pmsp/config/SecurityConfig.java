@@ -1,3 +1,22 @@
+
+/**
+ * This package contains configuration classes for the PMSP (Project Management System Project) application.
+ *
+ * JwtFilter: A Spring Security filter that processes incoming HTTP requests.
+ * It is responsible for validating and extracting JWT tokens from the request headers.
+ * If a valid token is found, it authenticates the user and populates the Spring Security context.
+ *
+ * MyUserDetailsService: A service class that loads user details from the database based on the provided username.
+ *
+ * JwtService: A service class that handles JWT token generation, extraction, and validation.
+ *
+ * SecurityConfig: A Spring Security configuration class for the PMSP application.
+ * It sets up authentication providers, defines security rules, and configures the HTTP security settings.
+ *
+ * @author uday
+ * @since 1.0.0
+ */
+
 package com.pmspProject.pmsp.config;
 
 import org.springframework.beans.factory.annotation.Autowired;

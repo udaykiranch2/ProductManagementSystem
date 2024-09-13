@@ -1,5 +1,12 @@
+/**
+ * This class represents the UserPrincipal, which is used to encapsulate the User entity and provide additional functionality for Spring Security.
+ *
+ * The UserPrincipal class implements the UserDetails interface, which is required by Spring Security for authentication.
+ *
+ * @author uday
+ * @since 1.0
+ */
 package com.pmspProject.pmsp.model;
-
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

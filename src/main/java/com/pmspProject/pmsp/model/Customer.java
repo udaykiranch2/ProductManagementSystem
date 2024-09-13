@@ -1,3 +1,12 @@
+
+/**
+ * This annotation is used to specify the name of the table to which the annotated entity class is mapped.
+ * In this case, the Customer class is mapped to the "customer" table in the database.
+ *
+ * @author YourName
+ * @since 1.0
+ */
+
 package com.pmspProject.pmsp.model;
 
 import java.util.List;

@@ -1,3 +1,11 @@
+/**
+ * PmspApplication class is the main entry point of the application.
+ * It uses Spring Boot's @SpringBootApplication annotation to enable auto-configuration, component scanning,
+ * and other features.
+ *
+ * @author uday
+ * @since 1.0.0
+ */
 package com.pmspProject.pmsp;
 
 import org.springframework.boot.SpringApplication;

@@ -1,3 +1,11 @@
+/**
+ * This class provides services related to user management.
+ * It includes methods for finding users by username, saving regular users, and
+ * saving administrators.
+ *
+ * @author uday
+ * @since 1.0
+ */
 package com.pmspProject.pmsp.service;
 
 import com.pmspProject.pmsp.model.Role;
@@ -11,14 +19,6 @@ import org.springframework.stereotype.Service;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * This class provides services related to user management.
- * It includes methods for finding users by username, saving regular users, and
- * saving administrators.
- *
- * @author Tabnine
- * @since 1.0
- */
 @Service
 public class UserService {
     @Autowired

@@ -1,3 +1,9 @@
+/**
+ * This class represents the Order entity in the database.
+ *
+ * @author uday
+ * @since 1.0
+ */
 package com.pmspProject.pmsp.model;
 
 import jakarta.persistence.*;
@@ -42,5 +48,5 @@ public class Order {
     @JoinColumn(name = "product_id1", referencedColumnName = "id") // Explicitly map the foreign key
     private Product product;
 
-//     Getters and setters
+    // Getters and setters
 }
