@@ -1,6 +1,5 @@
 package com.pmspProject.pmsp.service;
 
-
 import com.pmspProject.pmsp.model.Role;
 import com.pmspProject.pmsp.model.User;
 import com.pmspProject.pmsp.repo.UserRepo;
@@ -19,7 +18,6 @@ import java.util.stream.Collectors;
 
 @Service
 public class MyUserDetailsService implements UserDetailsService {
-
 
     @Autowired
     private UserRepo userRepository;
@@ -44,6 +42,5 @@ public class MyUserDetailsService implements UserDetailsService {
                 .map(role -> new SimpleGrantedAuthority(role.getName()))
                 .collect(Collectors.toList());
     }
-
 
 }

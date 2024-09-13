@@ -56,11 +56,9 @@ public class OrderService {
         return orderRepository.save(order);
     }
 
-
     public List<Order> getOrdersByCustomerId(Long customerId) {
         return orderRepository.findByCustomerId(customerId);
     }
-
 
     public Order processPayment(Long orderId, String paymentMethodId) throws Exception {
         Optional<Order> orderOpt = orderRepository.findById(orderId);
@@ -81,7 +79,6 @@ public class OrderService {
 
         return orderRepository.save(order);
     }
-
 
     public List<Order> getOrdersForCustomer(Long customerId) {
         // TODO Auto-generated method stub

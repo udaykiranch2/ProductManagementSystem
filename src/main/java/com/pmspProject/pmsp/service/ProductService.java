@@ -9,29 +9,24 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
-
 @Service
 public class ProductService {
 
     @Autowired
     private ProductRepository productRepository;
 
-
     @PreAuthorize("hasRole('ADMIN')")
     public Product createProduct(Product product) {
         return productRepository.save(product);
     }
 
-
     public List<Product> getAllProducts() {
         return productRepository.findAll();
     }
 
-
     public Optional<Product> getProductById(Long id) {
         return productRepository.findById(id);
     }
-
 
     @PreAuthorize("hasRole('ADMIN')")
     public Product updateProduct(Long id, Product product) {
@@ -41,7 +36,6 @@ public class ProductService {
         product.setId(id);
         return productRepository.save(product);
     }
-
 
     @PreAuthorize("hasRole('ADMIN')")
     public void deleteProduct(Long id) {

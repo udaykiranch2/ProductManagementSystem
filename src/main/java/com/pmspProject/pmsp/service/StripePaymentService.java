@@ -25,8 +25,7 @@ public class StripePaymentService implements PaymentGatewayService {
                     "amount", Math.round(amount * 100), // Convert amount to cents
                     "currency", "usd",
                     "source", paymentMethodId, // Payment method ID (e.g., a token or ID from Stripe Elements)
-                    "description", "Order Payment"
-            ));
+                    "description", "Order Payment"));
 
             // Check if the charge was successful
             return "succeeded".equals(charge.getStatus());
@@ -36,4 +35,3 @@ public class StripePaymentService implements PaymentGatewayService {
         }
     }
 }
-
