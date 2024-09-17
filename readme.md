@@ -1,4 +1,3 @@
-Here's a detailed `README.md` for your **E-Commerce Product Management System with Payment Integration** project:
 
 ---
 

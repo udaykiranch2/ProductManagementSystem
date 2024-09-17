@@ -25,7 +25,7 @@ INSERT INTO role (name) VALUES ('ROLE_USER');
 INSERT INTO role (name) VALUES ('ROLE_ADMIN');
 
 -- Create users
-INSERT INTO users (username, password) VALUES ('uday', '$2a$12$nDPxHovO/2jUEmlwP967/e0RDCyWKE4ljPS/GuXK64hl3C6ac83gi'); -- password: u@123
+INSERT INTO users (username, password) VALUES ('user', '$2a$12$nDPxHovO/2jUEmlwP967/e0RDCyWKE4ljPS/GuXK64hl3C6ac83gi'); -- password: u@123
 INSERT INTO users (username, password) VALUES ('admin', '$2a$12$nH7YfMvw0KUjq3PE9JRUz.FHZrMYnSHQYB0OW8IEGT3qVdxWkECaS'); -- password: a@123
 --
 -- Assign roles to users

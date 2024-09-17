@@ -61,7 +61,7 @@ public class OrderController {
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/customer/{customerId}")
     public ResponseEntity<List<Order>> getOrdersForCustomer(@PathVariable Long customerId) {
-        List<Order> orders = orderService.getOrdersForCustomer(customerId);
+        List<Order> orders = orderService.getOrdersByCustomerId(customerId);
         return ResponseEntity.ok(orders);
     }
 

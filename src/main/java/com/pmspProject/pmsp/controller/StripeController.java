@@ -6,13 +6,27 @@
  */
 package com.pmspProject.pmsp.controller;
 
+import com.pmspProject.pmsp.model.CardDetails;
+import com.stripe.Stripe;
 import com.stripe.model.Token;
 import com.stripe.param.TokenCreateParams;
+import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Map;
 
 @RestController
 public class StripeController {
+    @Value("${stripe.api.key}")
+    private String stripeApiKey;
+
+    private CardDetails cardDetails;
+
     /**
      * Endpoint for generating a Stripe payment method token for testing purposes.
      *
@@ -37,14 +51,21 @@ public class StripeController {
      * @return a string indicating the success or failure of token generation
      */
     @GetMapping("/api/generateToken")
-    public String generateVisaToken() {
+    public ResponseEntity<String> generateToken(@Valid @RequestBody Map<String, String> cardDetails) {
+        // Initialize Stripe with the API key
+        Stripe.apiKey = stripeApiKey;
         try {
+            // Extract card details from the JSON object
+            String cardNumber = cardDetails.get("cardNumber");
+            String expMonth = cardDetails.get("expMonth");
+            String expYear = cardDetails.get("expYear");
+            String cvc = cardDetails.get("cvc");
             // Creating card parameters for testing
             TokenCreateParams.Card cardParams = TokenCreateParams.Card.builder()
-                    .setNumber("4242424242424242") // Visa test card
-                    .setExpMonth("12")
-                    .setExpYear("2024")
-                    .setCvc("123")
+                    .setNumber(cardNumber) // Accepted as a parameter
+                    .setExpMonth(expMonth) // Accepted as a parameter
+                    .setExpYear(expYear) // Accepted as a parameter
+                    .setCvc(cvc) // Accepted as a parameter
                     .build();
 
             // Creating token parameters with the card
@@ -55,9 +76,10 @@ public class StripeController {
             // Generate the token using Stripe API
             Token token = Token.create(params);
 
-            return "Generated Token: " + token.getId();
+            return ResponseEntity.ok("Generated Token: " + token.getId());
         } catch (Exception e) {
-            return "Error creating token: " + e.getMessage();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error creating token: " + e.getMessage());
         }
     }
 }
