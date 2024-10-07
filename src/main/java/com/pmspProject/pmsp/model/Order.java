@@ -34,18 +34,18 @@ public class Order {
     @Min(value = 0, message = "Total amount must be greater than or equal to 0")
     private Double totalAmount;
 
-    @NotNull(message = "Customer ID is mandatory")
-    private Long customerId;
+    // @NotNull(message = "Customer ID is mandatory")
+    // private Long customerId;
 
-    @NotNull(message = "Product ID is mandatory")
-    private Long productId;
+    // @NotNull(message = "Product ID is mandatory")
+    // private Long productId;
 
     @ManyToOne
-    @JoinColumn(name = "customer_id1", referencedColumnName = "id") // Explicitly map the foreign key
+    @JoinColumn(name = "customer_id", referencedColumnName = "id") // Explicitly map the foreign key
     private Customer customer;
 
     @ManyToOne
-    @JoinColumn(name = "product_id1", referencedColumnName = "id") // Explicitly map the foreign key
+    @JoinColumn(name = "product_id", referencedColumnName = "id") // Explicitly map the foreign key
     private Product product;
 
     // Getters and setters

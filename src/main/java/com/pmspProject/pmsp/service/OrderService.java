@@ -63,8 +63,8 @@ public class OrderService {
         order.setOrderDate(new java.util.Date());
         order.setStatus("PENDING");
         order.setTotalAmount(product.getPrice() * quantity);
-        order.setCustomerId(customerId);
-        order.setProductId(productId);
+        // order.setCustomerId(customerId);
+        // order.setProductId(productId);
 
         product.setStockQuantity(product.getStockQuantity() - quantity);
         productRepository.save(product);
