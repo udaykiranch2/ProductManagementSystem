@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.pmspProject.pmsp.model.Order;
+import com.pmspProject.pmsp.dto.OrderResponse;
 import com.pmspProject.pmsp.service.OrderService;
 
 import jakarta.validation.Valid;
@@ -40,10 +40,10 @@ public class OrderController {
     // Place an order (Authenticated customer)
     @PreAuthorize("hasRole('USER')")
     @PostMapping
-    public ResponseEntity<Order> placeOrder(@Valid @RequestParam Long customerId, @Valid @RequestParam Long productId,
+    public ResponseEntity<OrderResponse> placeOrder(@Valid @RequestParam Long customerId, @Valid @RequestParam Long productId,
             @RequestParam int quantity) {
         try {
-            Order order = orderService.createOrder(customerId, productId, quantity);
+            OrderResponse order = orderService.createOrder(customerId, productId, quantity);
             return ResponseEntity.ok(order);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(null);
@@ -60,8 +60,8 @@ public class OrderController {
     // Retrieve orders for a customer (Authenticated customer)
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/customer/{customerId}")
-    public ResponseEntity<List<Order>> getOrdersForCustomer(@PathVariable Long customerId) {
-        List<Order> orders = orderService.getOrdersByCustomerId(customerId);
+    public ResponseEntity<List<OrderResponse>> getOrdersForCustomer(@PathVariable Long customerId) {
+        List<OrderResponse> orders = orderService.getOrdersByCustomerId(customerId);
         return ResponseEntity.ok(orders);
     }
 
@@ -79,7 +79,7 @@ public class OrderController {
     @PostMapping("/pay/{orderId}")
     public ResponseEntity<?> payForOrder(@PathVariable Long orderId, @Valid @RequestParam String paymentMethodId) {
         try {
-            Order order = orderService.processPayment(orderId, paymentMethodId);
+            OrderResponse order = orderService.processPayment(orderId, paymentMethodId);
             return ResponseEntity.ok("Payment successful for Order ID: " + orderId);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());

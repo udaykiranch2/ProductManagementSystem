@@ -21,8 +21,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.pmspProject.pmsp.model.Product;
-import com.pmspProject.pmsp.service.ProductService;
+import com.pmspProject.pmsp.dto.ProductRequest;
+import com.pmspProject.pmsp.dto.ProductResponse;
+import com.pmspProject.pmsp.service.impl.ProductServiceImpl;
 
 import jakarta.validation.Valid;
 
@@ -31,7 +32,7 @@ import jakarta.validation.Valid;
 public class ProductController {
 
     @Autowired
-    private ProductService productService;
+    private ProductServiceImpl productService;
 
     /**
      * Creates a new product.
@@ -42,8 +43,8 @@ public class ProductController {
     // Admin only - Create a new product
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
-    public ResponseEntity<Product> createProduct(@Valid @RequestBody Product product) {
-        Product createdProduct = productService.createProduct(product);
+    public ResponseEntity<ProductResponse> createProduct(@Valid ProductRequest request) {
+        ProductResponse createdProduct = productService.createProduct(request);
         return ResponseEntity.ok(createdProduct);
     }
 
@@ -54,8 +55,8 @@ public class ProductController {
      */
     // Retrieve all products (Publicly accessible)
     @GetMapping
-    public ResponseEntity<List<Product>> getAllProducts() {
-        List<Product> products = productService.getAllProducts();
+    public ResponseEntity<List<ProductResponse>> getAllProducts() {
+        List<ProductResponse> products = productService.getAllProducts();
         return ResponseEntity.ok(products);
     }
 
@@ -67,8 +68,8 @@ public class ProductController {
      */
     // Retrieve a product by ID (Publicly accessible)
     @GetMapping("/{id}")
-    public ResponseEntity<Optional<Product>> getProductById(@PathVariable Long id) {
-        Optional<Product> product = productService.getProductById(id);
+    public ResponseEntity<Optional<ProductResponse>> getProductById(@PathVariable Long id) {
+        Optional<ProductResponse> product = productService.getProductById(id);
         return ResponseEntity.ok(product);
     }
 
@@ -82,8 +83,8 @@ public class ProductController {
     // Admin only - Update product details
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
-    public ResponseEntity<Product> updateProduct(@PathVariable Long id, @Valid @RequestBody Product product) {
-        Product updatedProduct = productService.updateProduct(id, product);
+    public ResponseEntity<ProductResponse> updateProduct(@PathVariable Long id, @Valid @RequestBody ProductRequest product) {
+        ProductResponse updatedProduct = productService.updateProduct(id, product);
         return ResponseEntity.ok(updatedProduct);
     }
 

@@ -5,14 +5,23 @@
  */
 package com.pmspProject.pmsp.controller;
 
-import com.pmspProject.pmsp.model.Customer;
-import com.pmspProject.pmsp.service.CustomerService;
-import jakarta.validation.Valid;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Optional;
+import com.pmspProject.pmsp.dto.CustomerRequest;
+import com.pmspProject.pmsp.dto.CustomerResponse;
+import com.pmspProject.pmsp.service.CustomerService;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/customers")
@@ -29,8 +38,8 @@ public class CustomerController {
      */
     // Register a new customer (Publicly accessible)
     @PostMapping("/register")
-    public ResponseEntity<Customer> registerCustomer(@Valid @RequestBody Customer customer) {
-        Customer newCustomer = customerService.registerCustomer(customer);
+    public ResponseEntity<CustomerResponse> registerCustomer(@Valid @RequestBody CustomerRequest customer) {
+        CustomerResponse newCustomer = customerService.registerCustomer(customer);
         return ResponseEntity.ok(newCustomer);
     }
 
@@ -42,8 +51,8 @@ public class CustomerController {
      */
     // Retrieve customer details (Authenticated customer)
     @GetMapping("/{id}")
-    public ResponseEntity<Optional<Customer>> getCustomerDetails(@PathVariable Long id) {
-        Optional<Customer> customer = customerService.getCustomerById(id);
+    public ResponseEntity<Optional<CustomerResponse>> getCustomerDetails(@PathVariable Long id) {
+        Optional<CustomerResponse> customer = customerService.getCustomerById(id);
         return ResponseEntity.ok(customer);
     }
 
@@ -57,9 +66,9 @@ public class CustomerController {
 
     // Update customer details (Authenticated customer)
     @PutMapping("/{id}")
-    public ResponseEntity<Customer> updateCustomerDetails(@PathVariable Long id,
-            @Valid @RequestBody Customer customer) {
-        Customer updatedCustomer = customerService.updateCustomer(id, customer);
+    public ResponseEntity<CustomerResponse> updateCustomerDetails(@PathVariable Long id,
+            @Valid @RequestBody CustomerRequest customer) {
+                CustomerResponse updatedCustomer = customerService.updateCustomer(id, customer);
         return ResponseEntity.ok(updatedCustomer);
     }
 }
