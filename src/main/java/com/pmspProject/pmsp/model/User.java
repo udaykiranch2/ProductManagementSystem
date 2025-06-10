@@ -10,22 +10,48 @@
  */
 package com.pmspProject.pmsp.model;
 
+import com.pmspProject.pmsp.audit.Auditable;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
 
+import java.util.Collection;
 import java.util.Set;
+import java.util.UUID;
 
-@Data
-@Table(name = "users")
+@NoArgsConstructor
+@AllArgsConstructor
+@Setter
+@Getter
+@Audited
 @Entity
-public class User {
+@Builder
+@Table(name = "USER")
+public  class User extends Auditable<String> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private UUID id;
+
+    @Column(name = "USERNAME", unique = true)
     private String username;
+
+    @Column(name = "PASSWORD")
     private String password;
+
+    @Column(name = "IS_ACTIVE", unique = true)
+    private Boolean isActive;
+
+    @NotAudited
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinTable(name = "users_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private Set<Role> roles;
+    @JoinTable(
+            name = "users_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(
+                    name = "role_id",
+                    referencedColumnName = "id"
+            )
+    )
+    private Collection<Role> roles;
 }

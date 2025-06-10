@@ -1,25 +1,45 @@
 package com.pmspProject.pmsp.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import lombok.Data;
+import lombok.*;
+import org.hibernate.envers.Audited;
 
-@Data
+import java.util.UUID;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+@Audited
 @Entity
 public class CardDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
-    @NotBlank(message = "cardNumber is mandatory")
+    private UUID id;
+
+    @Column(name = "CARD_NUMBER", nullable = false)
     private String cardNumber;
-    @NotBlank(message = "expiry month is mandatory")
+
+    @Column(name = "CARD_HOLDER_NAME")
+    private String cardHolderName;
+
+    @Column(name = "EXP_MONTH", nullable = false)
     private String expMonth;
-    @NotBlank(message = "expiry year is mandatory")
+
+    @Column(name = "EXP_YEAR", nullable = false)
     private String expYear;
-    @NotBlank(message = "cvc is mandatory")
+
+    @Column(name = "CVC", nullable = false)
     private String cvc;
+
+    @Column(name = "CARD_BRAND")
+    private String cardBrand; // VISA, MASTERCARD, etc.
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "customer_id", nullable = false)
+    private Customer customer;
+
 }
 

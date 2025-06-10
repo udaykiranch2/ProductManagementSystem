@@ -1,19 +1,13 @@
-/**
- * This class represents the Role entity in the database.
- * It uses Lombok's @Data annotation to automatically generate getters, setters, equals, hashCode, and toString methods.
- *
- * @author uday
- * @since 1.0
- */
 package com.pmspProject.pmsp.model;
 
+
 import com.pmspProject.pmsp.audit.Auditable;
+import com.stripe.model.tax.Registration;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.envers.Audited;
 
 import java.util.UUID;
-
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -22,8 +16,8 @@ import java.util.UUID;
 @Audited
 @Entity
 @Builder
-@Table(name = "roles")
-public class Role extends Auditable<String> {
+@Table(name = "PRODUCT_CATEGORY")
+public class ProductCategory extends Auditable<UUID> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,7 +26,6 @@ public class Role extends Auditable<String> {
     @Column(name = "NAME", nullable = false, unique = true)
     private String name;
 
-    @Column(name="DESCRIPTION")
+    @Column(name = "DESCRIPTION")
     private String description;
-    // Getters and setters
 }
