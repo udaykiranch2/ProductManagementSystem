@@ -118,6 +118,21 @@
             <artifactId>spring-security-test</artifactId>
             <scope>test</scope>
         </dependency>
+
+        <!-- Hibernate Core -->
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-core</artifactId>
+            <version>6.2.2.Final</version> <!-- or your preferred version -->
+        </dependency>
+
+        <!-- Hibernate Envers -->
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-envers</artifactId>
+            <version>6.2.2.Final</version> <!-- should match your Hibernate version -->
+        </dependency>
+
     </dependencies>
 
     <build>
