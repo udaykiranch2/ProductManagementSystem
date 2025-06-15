@@ -1,4 +1,3 @@
-
 /**
  * This annotation is used to specify the name of the table to which the annotated entity class is mapped.
  * In this case, the Customer class is mapped to the "customer" table in the database.
@@ -9,8 +8,8 @@
 
 package com.pmspProject.pmsp.model;
 
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 import com.stripe.model.PaymentMethod;
 import jakarta.persistence.*;
@@ -18,6 +17,9 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.validator.constraints.UUID;
 
 @Data
 @Entity
@@ -29,16 +31,16 @@ public class Customer {
     private UUID id;
 
     @NotBlank(message = "First name is mandatory")
-    @Column(name= "FIRST_NAME",nullable = false, columnDefinition = "VARCHAR(50)")
+    @Column(name = "FIRST_NAME", nullable = false, columnDefinition = "VARCHAR(50)")
     private String firstName;
 
     @NotBlank(message = "Last name is mandatory")
-    @Column(name= "LAST_NAME",nullable = false, columnDefinition = "VARCHAR(50)")
+    @Column(name = "LAST_NAME", nullable = false, columnDefinition = "VARCHAR(50)")
     private String lastName;
 
     @Email(message = "Invalid email address")
     @NotBlank(message = "Email is mandatory")
-    @Column(name="EMAIL",nullable = false, unique = true)
+    @Column(name = "EMAIL", nullable = false, unique = true)
     private String email;
 
     @Pattern(regexp = "^\\+?[0-9]{10,15}$", message = "Invalid phone number")
@@ -50,10 +52,24 @@ public class Customer {
     @Column(name = "ADDRESS", nullable = false, columnDefinition = "VARCHAR(255)")
     private String address;
 
-    @OneToMany(mappedBy = "CUSTOMER", cascade = CascadeType.ALL, orphanRemoval = true)
+    @CreationTimestamp
+    @Column(name = "CREATED_AT", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    @Column(name = "UPDATED_AT", nullable = false)
+    private LocalDateTime updatedAt;
+
+    @Column(name = "CREATED_BY")
+    private String createdBy;
+
+    @Column(name = "UPDATED_BY")
+    private String updatedBy;
+
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Order> orders;
 
-    @OneToMany(mappedBy = "CUSTOMER", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
     private List<PaymentMethod> paymentMethods;
     // Getters and setters
 }

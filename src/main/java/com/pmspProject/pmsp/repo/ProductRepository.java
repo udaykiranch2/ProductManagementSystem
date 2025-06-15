@@ -12,12 +12,16 @@
  */
 package com.pmspProject.pmsp.repo;
 
+import com.pmspProject.pmsp.model.Product;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.pmspProject.pmsp.model.Product;
+import org.hibernate.validator.constraints.UUID;
 
 @Repository
-public interface ProductRepository extends JpaRepository<Product, Long> {
-    // You can define custom query methods here if needed
+public interface ProductRepository extends JpaRepository<Product, UUID> {
+    Page<Product> findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(
+            String name, String description, Pageable pageable);
 }

@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMin;
 import lombok.*;
 import org.hibernate.envers.Audited;
+import org.hibernate.validator.constraints.UUID;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -21,7 +22,7 @@ import java.time.LocalDateTime;
 public class Payment extends Auditable<String> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private UUID id;
 
     @OneToOne
     @JoinColumn(name = "order_id", nullable = false)
@@ -39,6 +40,7 @@ public class Payment extends Auditable<String> {
     private String transactionId;
 
     @Column(nullable = false)
+    @Builder.Default
     private LocalDateTime paymentDate = LocalDateTime.now();
 
     @Enumerated(EnumType.STRING)

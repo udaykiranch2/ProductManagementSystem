@@ -7,8 +7,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import org.hibernate.envers.Audited;
 
-import java.time.LocalDateTime;
-import java.util.UUID;
+import org.hibernate.validator.constraints.UUID;
 
 @Getter
 @Setter

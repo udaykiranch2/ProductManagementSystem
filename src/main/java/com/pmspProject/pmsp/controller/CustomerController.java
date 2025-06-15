@@ -5,61 +5,79 @@
  */
 package com.pmspProject.pmsp.controller;
 
-import com.pmspProject.pmsp.model.Customer;
+import com.pmspProject.pmsp.dto.CustomerDTO;
 import com.pmspProject.pmsp.service.CustomerService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
+import org.hibernate.validator.constraints.UUID;
 
 @RestController
-@RequestMapping("/api/customers")
+@RequestMapping("/api/v1/customers")
+@Tag(name = "Customer Management", description = "APIs for managing customers")
 public class CustomerController {
 
+    private final CustomerService customerService;
+
     @Autowired
-    private CustomerService customerService;
+    public CustomerController(CustomerService customerService) {
+        this.customerService = customerService;
+    }
 
-    /**
-     * Registers a new customer.
-     *
-     * @param customer The customer object to be registered.
-     * @return ResponseEntity containing the registered customer.
-     */
-    // Register a new customer (Publicly accessible)
+    @Operation(summary = "Register a new customer", description = "Registers a new customer in the system")
     @PostMapping("/register")
-    public ResponseEntity<Customer> registerCustomer(@Valid @RequestBody Customer customer) {
-        Customer newCustomer = customerService.registerCustomer(customer);
-        return ResponseEntity.ok(newCustomer);
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<CustomerDTO> registerCustomer(@Valid @RequestBody CustomerDTO customerDTO) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(customerService.registerCustomer(customerDTO));
     }
 
-    /**
-     * Retrieves customer details by their ID.
-     *
-     * @param id The ID of the customer to retrieve.
-     * @return ResponseEntity containing the customer details.
-     */
-    // Retrieve customer details (Authenticated customer)
+    @Operation(summary = "Get all customers", description = "Retrieves a paginated list of all customers")
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping
+    public ResponseEntity<Page<CustomerDTO>> getAllCustomers(Pageable pageable) {
+        return ResponseEntity.ok(customerService.getAllCustomers(pageable));
+    }
+
+    @Operation(summary = "Get customer by ID", description = "Retrieves a customer by their ID")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @GetMapping("/{id}")
-    public ResponseEntity<Optional<Customer>> getCustomerDetails(@PathVariable Long id) {
-        Optional<Customer> customer = customerService.getCustomerById(id);
-        return ResponseEntity.ok(customer);
+    public ResponseEntity<CustomerDTO> getCustomerById(@PathVariable UUID id) {
+        return ResponseEntity.ok(customerService.getCustomerById(id));
     }
 
-    /**
-     * Updates customer details by their ID.
-     *
-     * @param id       The ID of the customer to update.
-     * @param customer The updated customer object.
-     * @return ResponseEntity containing the updated customer.
-     */
-
-    // Update customer details (Authenticated customer)
+    @Operation(summary = "Update customer", description = "Updates an existing customer's details")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @PutMapping("/{id}")
-    public ResponseEntity<Customer> updateCustomerDetails(@PathVariable Long id,
-            @Valid @RequestBody Customer customer) {
-        Customer updatedCustomer = customerService.updateCustomer(id, customer);
-        return ResponseEntity.ok(updatedCustomer);
+    public ResponseEntity<CustomerDTO> updateCustomer(
+            @PathVariable UUID id,
+            @Valid @RequestBody CustomerDTO customerDTO) {
+        return ResponseEntity.ok(customerService.updateCustomer(id, customerDTO));
+    }
+
+    @Operation(summary = "Delete customer", description = "Deletes a customer")
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public ResponseEntity<Void> deleteCustomer(@PathVariable UUID id) {
+        customerService.deleteCustomer(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @Operation(summary = "Search customers", description = "Search customers by name or email")
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/search")
+    public ResponseEntity<Page<CustomerDTO>> searchCustomers(
+            @RequestParam String query,
+            Pageable pageable) {
+        return ResponseEntity.ok(customerService.searchCustomers(query, pageable));
     }
 }

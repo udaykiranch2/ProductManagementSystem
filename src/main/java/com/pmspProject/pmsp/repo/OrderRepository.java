@@ -7,7 +7,7 @@
  *
  * <p>Custom query methods are defined here:
  * <ul>
- *     <li>{@link #findByCustomerId(Long)}: Retrieves a list of orders based on the customer's ID.</li>
+ *     <li>{@link #findByCustomerId(UUID)}: Retrieves a list of orders based on the customer's ID.</li>
  * </ul>
  *
  * <p>Additional custom query methods can be defined here if needed.
@@ -17,17 +17,19 @@
  */
 package com.pmspProject.pmsp.repo;
 
-import java.util.List;
 
+import org.hibernate.validator.constraints.UUID;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import com.pmspProject.pmsp.model.Order;
 
 @Repository
-public interface OrderRepository extends JpaRepository<Order, Long> {
+public interface OrderRepository extends JpaRepository<Order, UUID> {
 
-    List<Order> findByCustomerId(Long customerId);
+    Page<Order> findByCustomerId(UUID customerId, Pageable pageable);
     // we can define custom query methods here if needed
 
 }

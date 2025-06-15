@@ -6,10 +6,9 @@
 
 package com.pmspProject.pmsp.controller;
 
-import java.util.List;
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,85 +18,66 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.pmspProject.pmsp.model.Product;
+import com.pmspProject.pmsp.dto.ProductDTO;
 import com.pmspProject.pmsp.service.ProductService;
-
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
+import org.hibernate.validator.constraints.UUID;
+
 @RestController
-@RequestMapping("/api/products")
+@RequestMapping("/api/v1/products")
+@Tag(name = "Product Management", description = "APIs for managing products")
 public class ProductController {
 
     @Autowired
     private ProductService productService;
 
-    /**
-     * Creates a new product.
-     *
-     * @param product The product object to be created.
-     * @return ResponseEntity containing the created product.
-     */
-    // Admin only - Create a new product
+    @Operation(summary = "Create a new product", description = "Creates a new product. Requires ADMIN role.")
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
-    public ResponseEntity<Product> createProduct(@Valid @RequestBody Product product) {
-        Product createdProduct = productService.createProduct(product);
-        return ResponseEntity.ok(createdProduct);
+    public ResponseEntity<ProductDTO> createProduct(@Valid @RequestBody ProductDTO productDTO) {
+        return ResponseEntity.ok(productService.createProduct(productDTO));
     }
 
-    /**
-     * Retrieves all products.
-     *
-     * @return ResponseEntity containing a list of all products.
-     */
-    // Retrieve all products (Publicly accessible)
+    @Operation(summary = "Get all products", description = "Retrieves a paginated list of all products.")
     @GetMapping
-    public ResponseEntity<List<Product>> getAllProducts() {
-        List<Product> products = productService.getAllProducts();
-        return ResponseEntity.ok(products);
+    public ResponseEntity<Page<ProductDTO>> getAllProducts(Pageable pageable) {
+        return ResponseEntity.ok(productService.getAllProducts(pageable));
     }
 
-    /**
-     * Retrieves a product by its ID.
-     *
-     * @param id The ID of the product to retrieve.
-     * @return ResponseEntity containing the product details.
-     */
-    // Retrieve a product by ID (Publicly accessible)
+    @Operation(summary = "Get product by ID", description = "Retrieves a product by its ID.")
     @GetMapping("/{id}")
-    public ResponseEntity<Optional<Product>> getProductById(@PathVariable Long id) {
-        Optional<Product> product = productService.getProductById(id);
-        return ResponseEntity.ok(product);
+    public ResponseEntity<ProductDTO> getProductById(@PathVariable UUID id) {
+        return ResponseEntity.ok(productService.getProductById(id));
     }
 
-    /**
-     * Updates product details.
-     *
-     * @param id      The ID of the product to update.
-     * @param product The updated product object.
-     * @return ResponseEntity containing the updated product.
-     */
-    // Admin only - Update product details
+    @Operation(summary = "Update product", description = "Updates an existing product. Requires ADMIN role.")
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
-    public ResponseEntity<Product> updateProduct(@PathVariable Long id, @Valid @RequestBody Product product) {
-        Product updatedProduct = productService.updateProduct(id, product);
-        return ResponseEntity.ok(updatedProduct);
+    public ResponseEntity<ProductDTO> updateProduct(
+            @PathVariable UUID id,
+            @Valid @RequestBody ProductDTO productDTO) {
+        return ResponseEntity.ok(productService.updateProduct(id, productDTO));
     }
 
-    /**
-     * Deletes a product.
-     *
-     * @param id The ID of the product to delete.
-     * @return ResponseEntity with no content.
-     */
-    // Admin only - Delete a product
+    @Operation(summary = "Delete product", description = "Deletes a product. Requires ADMIN role.")
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteProduct(@PathVariable UUID id) {
         productService.deleteProduct(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @Operation(summary = "Search products", description = "Search products by name or description.")
+    @GetMapping("/search")
+    public ResponseEntity<Page<ProductDTO>> searchProducts(
+            @RequestParam String query,
+            Pageable pageable) {
+        return ResponseEntity.ok(productService.searchProducts(query, pageable));
     }
 }

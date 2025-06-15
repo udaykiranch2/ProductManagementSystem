@@ -11,8 +11,8 @@ import com.pmspProject.pmsp.audit.Auditable;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.envers.Audited;
+import org.hibernate.validator.constraints.UUID;
 
-import java.util.UUID;
 
 
 @NoArgsConstructor

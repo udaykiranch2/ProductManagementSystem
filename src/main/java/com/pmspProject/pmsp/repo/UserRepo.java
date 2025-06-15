@@ -16,11 +16,13 @@
 package com.pmspProject.pmsp.repo;
 
 import com.pmspProject.pmsp.model.User;
+
+import org.hibernate.validator.constraints.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface UserRepo extends JpaRepository<User, Integer> {
+public interface UserRepo extends JpaRepository<User, UUID> {
 
     User findByUsername(String username);
 
