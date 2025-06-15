@@ -57,10 +57,10 @@ public class MyUserDetailsService implements UserDetailsService {
      * Maps the roles of a user to Spring Security authorities.
      *
      * @param roles The roles of the user.
-     * @return A collection of granted authorities based on the user's roles.
-     */
-    private Collection<? extends GrantedAuthority> mapRolesToAuthorities(Set<Role> roles) {
-        return roles.stream()
+          * @return A collection of granted authorities based on the user's roles.
+          */
+         private Collection<? extends GrantedAuthority> mapRolesToAuthorities(Collection<Role> roles) {
+             return roles.stream()
                 .map(role -> new SimpleGrantedAuthority(role.getName()))
                 .collect(Collectors.toList());
     }

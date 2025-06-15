@@ -2,12 +2,10 @@ package com.pmspProject.pmsp.model;
 
 
 import com.pmspProject.pmsp.audit.Auditable;
-import com.stripe.model.tax.Registration;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.envers.Audited;
-
-import java.util.UUID;
+import org.hibernate.validator.constraints.UUID;
 
 @NoArgsConstructor
 @AllArgsConstructor

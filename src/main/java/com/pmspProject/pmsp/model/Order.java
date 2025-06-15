@@ -9,20 +9,16 @@ package com.pmspProject.pmsp.model;
 import com.pmspProject.pmsp.audit.Auditable;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
-import org.springframework.cglib.core.Local;
+import org.hibernate.validator.constraints.UUID;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 @Getter
 @Setter
@@ -32,7 +28,7 @@ import java.util.UUID;
 @Entity
 @Audited
 @Table(name = "ORDERS")
-public class Order extends Auditable<String> {
+public class Order extends Auditable<UUID> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -52,12 +48,6 @@ public class Order extends Auditable<String> {
     @Column(name = "total_amount", precision = 10, scale = 2, nullable = false)
     private BigDecimal totalAmount;
 
-    // @NotNull(message = "Customer ID is mandatory")
-    // private Long customerId;
-
-    // @NotNull(message = "Product ID is mandatory")
-    // private Long productId;
-
     @NotAudited
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id", referencedColumnName = "id") // Explicitly map the foreign key
@@ -66,10 +56,6 @@ public class Order extends Auditable<String> {
     @NotAudited
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> items;
-
-//    @ManyToOne
-//    @JoinColumn(name = "product_id", referencedColumnName = "id") // Explicitly map the foreign key
-//    private Product product;
 
     @NotAudited
     @OneToOne(mappedBy = "order", cascade = CascadeType.ALL)

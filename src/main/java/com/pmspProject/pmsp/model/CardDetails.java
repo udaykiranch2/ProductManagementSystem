@@ -1,11 +1,10 @@
 package com.pmspProject.pmsp.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import org.hibernate.envers.Audited;
+import org.hibernate.validator.constraints.UUID;
 
-import java.util.UUID;
 
 @Getter
 @Setter

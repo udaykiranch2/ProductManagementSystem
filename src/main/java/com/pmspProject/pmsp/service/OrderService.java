@@ -7,118 +7,138 @@
  */
 package com.pmspProject.pmsp.service;
 
-import com.pmspProject.pmsp.model.Customer;
+import com.pmspProject.pmsp.dto.OrderDTO;
+import com.pmspProject.pmsp.exception.ResourceNotFoundException;
 import com.pmspProject.pmsp.model.Order;
-import com.pmspProject.pmsp.model.Product;
-import com.pmspProject.pmsp.repo.CustomerRepository;
+import com.pmspProject.pmsp.model.Customer;
+import com.pmspProject.pmsp.model.PaymentMethod;
 import com.pmspProject.pmsp.repo.OrderRepository;
-import com.pmspProject.pmsp.repo.ProductRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.pmspProject.pmsp.repo.CustomerRepository;
+import com.pmspProject.pmsp.repo.PaymentMethodRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Optional;
+import java.time.LocalDateTime;
+import org.hibernate.validator.constraints.UUID;
 
 @Service
+@RequiredArgsConstructor
+@Transactional
 public class OrderService {
 
-    @Autowired
-    private OrderRepository orderRepository;
+    private final OrderRepository orderRepository;
+    private final CustomerRepository customerRepository;
+    private final PaymentMethodRepository paymentMethodRepository;
 
-    @Autowired
-    private CustomerRepository customerRepository;
-
-    @Autowired
-    private ProductRepository productRepository;
-
-    @Autowired
-    private PaymentGatewayService paymentGatewayService; // This should be an interface for Stripe/PayPal integration
-
-    /**
-     * Creates a new order for a customer and a product.
-     *
-     * @param customerId the ID of the customer
-     * @param productId  the ID of the product
-     * @param quantity   the quantity of the product
-     * @return the created order
-     * @throws Exception if customer, product, or stock quantity is insufficient
-     */
-    public Order createOrder(Long customerId, Long productId, int quantity) throws Exception {
-        Optional<Customer> customerOpt = customerRepository.findById(customerId);
-        Optional<Product> productOpt = productRepository.findById(productId);
-
-        if (!customerOpt.isPresent()) {
-            throw new RuntimeException("Customer not found");
-        }
-        if (!productOpt.isPresent()) {
-            throw new RuntimeException("Product not found");
-        }
-
-        Product product = productOpt.get();
-        if (product.getStockQuantity() < quantity) {
-            throw new RuntimeException("Insufficient stock");
-        }
-
-        Order order = new Order();
-        order.setOrderDate(new java.util.Date());
+    @CacheEvict(value = "orders", allEntries = true)
+    public OrderDTO createOrder(OrderDTO orderDTO) {
+        Order order = mapToEntity(orderDTO);
+        order.setOrderDate(LocalDateTime.now());
         order.setStatus("PENDING");
-        order.setTotalAmount(product.getPrice() * quantity);
-        // order.setCustomerId(customerId);
-        // order.setProductId(productId);
-
-        product.setStockQuantity(product.getStockQuantity() - quantity);
-        productRepository.save(product);
-
-        return orderRepository.save(order);
+        Order savedOrder = orderRepository.save(order);
+        return mapToDTO(savedOrder);
     }
 
-    /**
-     * Retrieves all orders for a specific customer.
-     *
-     * @param customerId the ID of the customer
-     * @return a list of orders for the customer
-     */
-    public List<Order> getOrdersByCustomerId(Long customerId) {
-        return orderRepository.findByCustomerId(customerId);
+    @Cacheable(value = "orders")
+    public Page<OrderDTO> getAllOrders(Pageable pageable) {
+        return orderRepository.findAll(pageable)
+                .map(this::mapToDTO);
     }
 
-    /**
-     * Processes a payment for an order using the payment gateway.
-     *
-     * @param orderId         the ID of the order
-     * @param paymentMethodId the ID of the payment method
-     * @return the updated order
-     * @throws Exception if the order or payment processing fails
-     */
-    public Order processPayment(Long orderId, String paymentMethodId) throws Exception {
-        Optional<Order> orderOpt = orderRepository.findById(orderId);
+    @Cacheable(value = "orders", key = "#id")
+    public OrderDTO getOrderById(UUID id) {
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Order", "id", id));
+        return mapToDTO(order);
+    }
 
-        if (!orderOpt.isPresent()) {
-            throw new RuntimeException("Order not found");
+    @CacheEvict(value = "orders", allEntries = true)
+    public OrderDTO updateOrder(UUID id, OrderDTO orderDTO) {
+        Order existingOrder = orderRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Order", "id", id));
+
+        updateOrderFromDTO(existingOrder, orderDTO);
+        Order updatedOrder = orderRepository.save(existingOrder);
+        return mapToDTO(updatedOrder);
+    }
+
+    @CacheEvict(value = "orders", allEntries = true)
+    public void deleteOrder(UUID id) {
+        if (!orderRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Order", "id", id);
+        }
+        orderRepository.deleteById(id);
+    }
+
+    @Cacheable(value = "orders", key = "#customerId + #pageable.pageNumber + #pageable.pageSize")
+    public Page<OrderDTO> getOrdersByCustomerId(UUID customerId, Pageable pageable) {
+        return orderRepository.findByCustomerId(customerId, pageable)
+                .map(this::mapToDTO);
+    }
+
+    @CacheEvict(value = "orders", allEntries = true)
+    public OrderDTO processPayment(UUID orderId, UUID paymentMethodId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Order", "id", orderId));
+
+        PaymentMethod paymentMethod = paymentMethodRepository.findById(paymentMethodId)
+                .orElseThrow(() -> new ResourceNotFoundException("PaymentMethod", "id", paymentMethodId));
+
+        // Process payment logic here
+        order.setStatus("PAID");
+        Order updatedOrder = orderRepository.save(order);
+        return mapToDTO(updatedOrder);
+    }
+
+    @CacheEvict(value = "orders", allEntries = true)
+    public OrderDTO updateOrderStatus(UUID id, String status) {
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Order", "id", id));
+
+        order.setStatus(status);
+        Order updatedOrder = orderRepository.save(order);
+        return mapToDTO(updatedOrder);
+    }
+
+    private Order mapToEntity(OrderDTO dto) {
+        Order order = new Order();
+        order.setOrderDate(dto.getOrderDate());
+        order.setStatus(dto.getStatus());
+        order.setTotalAmount(dto.getTotalAmount());
+
+        if (dto.getCustomerId() != null) {
+            Customer customer = customerRepository.findById(dto.getCustomerId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Customer", "id", dto.getCustomerId()));
+            order.setCustomer(customer);
         }
 
-        Order order = orderOpt.get();
-        // Process payment using the payment gateway
-        boolean paymentSuccess = paymentGatewayService.processPayment(order.getTotalAmount(), paymentMethodId);
-
-        if (paymentSuccess) {
-            order.setStatus("PAID");
-        } else {
-            order.setStatus("FAILED");
-        }
-
-        return orderRepository.save(order);
+        return order;
     }
 
-    /**
-     * Retrieves all orders for a specific customer.
-     *
-     * @param customerId the ID of the customer
-     * @return a list of orders for the customer
-     * @deprecated This method is not implemented and should be removed.
-     */
-    public List<Order> getOrdersForCustomer(Long customerId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getOrdersForCustomer'");
+    private OrderDTO mapToDTO(Order order) {
+        OrderDTO dto = new OrderDTO();
+        dto.setId(order.getId());
+        dto.setCustomerId(order.getCustomer() != null ? order.getCustomer().getId() : null);
+        dto.setOrderDate(order.getOrderDate());
+        dto.setStatus(order.getStatus());
+        dto.setTotalAmount(order.getTotalAmount());
+        return dto;
+    }
+
+    private void updateOrderFromDTO(Order order, OrderDTO dto) {
+        order.setOrderDate(dto.getOrderDate());
+        order.setStatus(dto.getStatus());
+        order.setTotalAmount(dto.getTotalAmount());
+
+        if (dto.getCustomerId() != null) {
+            Customer customer = customerRepository.findById(dto.getCustomerId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Customer", "id", dto.getCustomerId()));
+            order.setCustomer(customer);
+        }
     }
 }
